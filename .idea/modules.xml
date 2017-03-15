@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/xHub.iml" filepath="$PROJECT_DIR$/xHub.iml" />
       <module fileurl="file://$PROJECT_DIR$/xwormapi/xwormapi.iml" filepath="$PROJECT_DIR$/xwormapi/xwormapi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xwormapt/xwormapt.iml" filepath="$PROJECT_DIR$/xwormapt/xwormapt.iml" />
     </modules>
   </component>
 </project>

@@ -1,1 +1,1 @@
-include ':app', ':xwormapi'
+include ':app', ':xwormapi', ':xwormapt'
