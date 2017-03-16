@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/xwormapi" />
             <option value="$PROJECT_DIR$/xwormapt" />
+            <option value="$PROJECT_DIR$/xwtemplates" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

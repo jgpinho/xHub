@@ -4,6 +4,8 @@ package com.extraware.xwormapt;
  * Created by JP on 15-03-2017.
  */
 
+import com.extraware.xwtemplate.template.Configuracao;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -16,9 +18,29 @@ import java.util.Set;
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class Processador extends AbstractProcessor {
 
+    private Registador registador;
+    private Configuracao cfg = new Configuracao();
+    private static String MENSAGEM_ERRO = "Erro a executar a anotação XwORM";
+
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        //TODO
+    public boolean process(Set<? extends TypeElement> anotacoes, RoundEnvironment ambiente) {
+
+        // Iniciar o XwTemplates
+        // TODO: cfg.setTemplateLoader(new ClassTemplateLoader(this.getClass(), "/res"));
+
+        // Iniciar o Registador
+        registador = new Registador(processingEnv.getMessager());
+        registador.informacao("Processador em execução...");
+
+        // Caso não exista nenhuma anotação a ser tratada nesta fase, sair para não escrever por cima do ficheiro
+        // do ambiente
+        if (anotacoes.size() < 1) return true;
+
+        for (TypeElement tipoAnotacao : anotacoes) {
+            registador.informacao("Processando elementos com @" + tipoAnotacao.getQualifiedName());
+        }
+
+        // TODO
         return false;
     }
 
