@@ -40,6 +40,9 @@ public class Processador extends AbstractProcessor {
             registador.informacao("Processando elementos com @" + tipoAnotacao.getQualifiedName());
         }
 
+        Ambiente xormAmbiente = new Ambiente(registador);
+        xormAmbiente.lerIndice(processingEnv.getFiler());
+
         // TODO
         return false;
     }

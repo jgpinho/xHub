@@ -1,15 +1,19 @@
 package com.extraware.xwormapt.conversor;
 
 import com.extraware.xwormapi.api.Conversor;
+import com.extraware.xwormapi.csv.CSVUtilitarios;
 import com.extraware.xwormapi.types.ConversorTipo;
 import com.extraware.xwormapi.types.ConversorTipo.TipoLigacao;
 import com.extraware.xwormapi.types.ConversorTipo.TipoSQL;
 import com.extraware.xwormapt.ModeloClasse;
+import com.extraware.xwormapt.Registador;
 
-/**
- * Created by JP on 18-03-2017.
- */
+import java.io.IOException;
+import java.util.Map;
+
 public class ModeloConversor extends ModeloClasse {
+
+    private static final String SEPARADOR_TIPO = ";";
 
     private String[] tiposConvertiveis;
     private TipoLigacao tipoLigacao;
@@ -55,5 +59,27 @@ public class ModeloConversor extends ModeloClasse {
 
     public String[] getTiposConvertiveis() {
         return tiposConvertiveis;
+    }
+
+    public TipoLigacao getTipoLigacao() {
+        return tipoLigacao;
+    }
+
+    public TipoSQL getTipoSQL() {
+        return tipoSQL;
+    }
+
+    public static ModeloConversor lerIndice(String infoConversor, Registador registador) throws IOException {
+
+        // Inicialização das propriedades
+        Map<String, String> propriedades = CSVUtilitarios.lerMapa(infoConversor);
+
+        // Obter as propriedades
+        String classeConversora = propriedades.get("classeConversora");
+        TipoLigacao tipoLigacao = TipoLigacao.valueOf(propriedades.get("tipoLigacao"));
+        TipoSQL tipoSQL = TipoSQL.valueOf(propriedades.get("tipoSQL"));
+        String[]tiposConvertiveis = propriedades.get("tiposConvertiveis").split(SEPARADOR_TIPO);
+
+        return new ModeloConversor(classeConversora, tiposConvertiveis, tipoLigacao, tipoSQL);
     }
 }

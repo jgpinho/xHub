@@ -1,29 +1,26 @@
 package com.extraware.xwormapt;
 
-/**
- * Created by JP on 18-03-2017.
- */
 public abstract class ModeloClasse {
 
-    private String nomeClasse;
-    private String nomePacote;
+    private String classe;
+    private String pacote;
 
-    public void setNomeClasse(String nomeClasse) {
-        this.nomeClasse = nomeClasse;
+    public void setClasse(String classe) {
+        this.classe = classe;
     }
-    public String getNomeClasse() {
-        return nomeClasse;
+    public String getClasse() {
+        return classe;
     }
 
-    public void setNomePacote(String nomePacote) {
-        this.nomePacote = nomePacote;
+    public void setPacote(String pacote) {
+        this.pacote = pacote;
     }
-    public String getNomePacote() {
-        return nomePacote;
+    public String getPacote() {
+        return pacote;
     }
 
     public String getQualifiedClassName() {
-        return this.getNomePacote() + "." + this.getNomeClasse();
+        return getPacote() + "." + getClasse();
     }
 
     /**
@@ -40,10 +37,10 @@ public abstract class ModeloClasse {
         }
 
         // Alterar o nome do pacote
-        setNomePacote(classeAuxiliar.substring(0, ultimoPonto));
+        setPacote(classeAuxiliar.substring(0, ultimoPonto));
 
         // Alterar o nome da classe
-        setNomeClasse(classeAuxiliar.substring(ultimoPonto + 1);
+        setClasse(classeAuxiliar.substring(ultimoPonto + 1));
     }
 
 
