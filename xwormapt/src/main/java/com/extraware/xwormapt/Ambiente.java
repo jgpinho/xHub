@@ -33,6 +33,10 @@ public class Ambiente {
         adicionarConversores();
     }
 
+    public Registador getRegistador() {
+        return registador;
+    }
+
     // Método para adicionar os conversores do ambiente
     private void adicionarConversores() {
         adicionarConversor(new ModeloConversor(new ConversorBlob()));

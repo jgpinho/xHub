@@ -1,18 +1,17 @@
 package com.extraware.xwormapt;
 
-/**
- * Created by JP on 15-03-2017.
- */
-
-import com.extraware.xwtemplate.template.Configuracao;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
+
+import com.extraware.xwormapi.api.Conversor;
+import com.extraware.xwormapt.conversor.ProcessadorConversor;
+import com.extraware.xwtemplate.template.Configuracao;
 
 @SupportedAnnotationTypes({ "com.extraware.xwormapi.api.BD" }) //TODO,"com.extraware.xwormapi.api.XEntidade","javax.persistence.Entity","com.extraware.xwormapi.api.XConversor" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
@@ -40,8 +39,18 @@ public class Processador extends AbstractProcessor {
             registador.informacao("Processando elementos com @" + tipoAnotacao.getQualifiedName());
         }
 
-        Ambiente xormAmbiente = new Ambiente(registador);
-        xormAmbiente.lerIndice(processingEnv.getFiler());
+        Ambiente xwormAmbiente = new Ambiente(registador);
+
+        // Ler as classes previamente processadas para suportar as compilações incrementais
+        xwormAmbiente.lerIndice(processingEnv.getFiler());
+
+        // Tratamento de todas as classes marcadas com a anotação Conversor
+        for (Element elemento : ambiente.getElementsAnnotatedWith(Conversor.class)) {
+            try {
+                ProcessadorConversor processadorConversor = new ProcessadorConversor(elemento, xwormAmbiente);
+                processadorConversor.preencherModelo();
+            }
+        }
 
         // TODO
         return false;
