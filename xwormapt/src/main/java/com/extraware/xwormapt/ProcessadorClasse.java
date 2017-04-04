@@ -42,6 +42,14 @@ public abstract class ProcessadorClasse {
         getModelo().setClasse(getClasse());
     }
 
+    public String getNomeQualificado() {
+        String pacote = getPacote();
+        if (pacote == null || pacote.length() < 1) {
+            throw new IllegalArgumentException("O pacote de defeito não é permitido para tipo " + getClasse());
+        }
+        return getPacote() + "." + getClasse();
+    }
+
     /**
      * Método para obter o nome do pacote da classe anotada.
      *
@@ -56,5 +64,15 @@ public abstract class ProcessadorClasse {
         return tipoElemento.getSimpleName().toString();
     }
 
+    /**
+     * Métodos para abortar do processamento com uma exceção de anotação.
+     * @param mensagem Mensagem a enviar
+     */
+    protected void abortar(String mensagem) {
+        abortar(mensagem, this.tipoElemento);
+    }
+    protected void abortar(String mensagem, Element elemento) {
+        throw new AnotacaoExcecao(mensagem, elemento);
+    }
 
 }

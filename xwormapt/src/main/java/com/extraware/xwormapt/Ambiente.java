@@ -9,6 +9,7 @@ import javax.annotation.processing.Filer;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import android.graphics.PorterDuff;
 import com.extraware.xwormapi.types.*;
 import com.extraware.xwormapt.basedados.ModeloBasedados;
 import com.extraware.xwormapt.conversor.ModeloConversor;
@@ -87,8 +88,37 @@ public class Ambiente {
         return true;
     }
 
-    void adicicionarBasedados(ModeloBasedados modeloBasedados) {
+    /**
+     * Método para adicionar um modelo de base de dados.
+     *
+     * @param modeloBasedados Modelo de base de dados que será adicionado.
+     */
+    void adicionarBasedados(ModeloBasedados modeloBasedados) {
         modelosBasedados.put(modeloBasedados.getQualifiedClassName(), modeloBasedados);
+    }
+
+    /**
+     * Método para obter a coleção de modelo de base de dados.
+     *
+     * @return Uma coleção de modelos de base de dados.
+     */
+    Collection<ModeloBasedados> getModelosBasedados() {
+        return modelosBasedados.values();
+    }
+
+    /**
+     * Método para obter determinado modelo de base de dados através do nome.
+     *
+     * @param classeGestora Nome da classe gestora.
+     * @return Retorna o modelo da base de dados pedido.
+     */
+    public ModeloBasedados getBasedadosPorNome(String classeGestora) {
+        return modelosBasedados.get(classeGestora);
+    }
+
+    public ModeloBasedados getBasedadosPorDefeito() {
+        if (modelosBasedados.size() > 0) return modelosBasedados.values().iterator().next();
+        return null;
     }
 
     /**
@@ -130,7 +160,7 @@ public class Ambiente {
             linha = leitor.readLine();
             while (linha != null && linha.startsWith(INICIO_BASEDADOS)) {
                 ModeloBasedados modeloBasedados = ModeloBasedados.lerIndice(leitor, registador);
-                adicicionarBasedados(modeloBasedados);
+                adicionarBasedados(modeloBasedados);
                 linha = leitor.readLine();
             }
 

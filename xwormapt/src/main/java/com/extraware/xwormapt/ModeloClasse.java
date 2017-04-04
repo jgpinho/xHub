@@ -1,9 +1,13 @@
 package com.extraware.xwormapt;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class ModeloClasse {
 
     private String classe;
     private String pacote;
+    protected List<String> importacoes = new ArrayList<String>();
 
     public void setClasse(String classe) {
         this.classe = classe;
@@ -19,8 +23,28 @@ public abstract class ModeloClasse {
         return pacote;
     }
 
+    public List<String> getImportacoes() {
+        return importacoes;
+    }
+    public void adicionarImportacao(String caminhoImportacao) {
+        if (!importacoes.contains(caminhoImportacao)) {
+            importacoes.add(caminhoImportacao);
+        }
+    }
+
     public String getQualifiedClassName() {
         return getPacote() + "." + getClasse();
+    }
+
+    /**
+     * Método para capitalizar a primeira letra
+     *
+     * @param nome Nome que será capitalizado
+     * @return Nome com a primeira letra capitalizada
+     */
+    protected String capitalizarPrimeira(String nome) {
+        String primeiraLetra = nome.substring(0, 1).toUpperCase();
+        return primeiraLetra + nome.substring(1);
     }
 
     /**

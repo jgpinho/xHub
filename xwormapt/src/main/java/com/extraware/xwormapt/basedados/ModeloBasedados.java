@@ -17,8 +17,15 @@ public class ModeloBasedados extends ModeloClasse {
     private String basedados;
     private int versao;
     private List<ModeloEntidade> entidades = new ArrayList<ModeloEntidade>();
-    private List<String> gestoresBasedados = new ArrayList<String>();
+    private List<String> gestoresTabela = new ArrayList<String>();
 
+    /**
+     * Construtor principal da classe.
+     *
+     * @param basedados Nome da base de dados
+     * @param versao Versão da base de dados
+     * @param classeGestora Nome da classe gestora da base de dados
+     */
     public ModeloBasedados(String basedados, int versao, String classeGestora) {
         super();
         setBasedados(basedados);
@@ -38,6 +45,23 @@ public class ModeloBasedados extends ModeloClasse {
     }
     public void setVersao(int versao) {
         this.versao = versao;
+    }
+
+    /**
+     * Método para adicionar entidade
+     *
+     * @param modeloEntidade Modelo da entidade a ser adicionado
+     */
+    public void adicionarEntidade(ModeloEntidade modeloEntidade) {
+
+        // Adicionar o modelo de entidade à lista de entidades
+        this.entidades.add(modeloEntidade);
+
+        // Duplicar a informação do Gestor de Tabelas para ser utilizado no escritor do índice
+        String nomeClasseGestorTabelas = modeloEntidade.getClasseGestorTabela();
+        if (!gestoresTabela.contains(nomeClasseGestorTabelas)) {
+            gestoresTabela.add(modeloEntidade.getClasseGestorTabela());
+        }
     }
 
     /**
@@ -71,7 +95,7 @@ public class ModeloBasedados extends ModeloClasse {
             gestoresBasedados.add(linha);
             linha = leitor.readLine();
         }
-        modeloBasedados.gestoresBasedados = gestoresBasedados;
+        modeloBasedados.gestoresTabela = gestoresBasedados;
 
         return modeloBasedados;
     }
