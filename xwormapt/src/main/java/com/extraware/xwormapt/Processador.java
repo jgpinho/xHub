@@ -1,13 +1,12 @@
 package com.extraware.xwormapt;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.persistence.Entity;
+import javax.tools.JavaFileObject;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,13 +14,17 @@ import java.util.Set;
 import com.extraware.xwormapi.api.Basedados;
 import com.extraware.xwormapi.api.Conversor;
 import com.extraware.xwormapi.api.Entidade;
+import com.extraware.xwormapt.basedados.ModeloBasedados;
 import com.extraware.xwormapt.basedados.ProcessadorBasedados;
+import com.extraware.xwormapt.basedados.TemplateFabricaBaseDados;
 import com.extraware.xwormapt.conversor.ProcessadorConversor;
 import com.extraware.xwormapt.entidade.ProcessadorEntidade;
 import com.extraware.xwormapt.entidade.TemplateEntidadeDAO;
 import com.extraware.xwormapt.entidade.TemplateGestorTabela;
-import com.extraware.xwtemplate.cache.CarregadorTemplateClasse;
-import com.extraware.xwtemplate.template.Configuracao;
+
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 @SupportedAnnotationTypes({ "com.extraware.xwormapi.api.Basedados","com.extraware.xwormapi.api.Entidade",
         "javax.persistence.Entity","com.extraware.xwormapi.api.Conversor" })
@@ -29,14 +32,14 @@ import com.extraware.xwtemplate.template.Configuracao;
 public class Processador extends AbstractProcessor {
 
     private Registador registador;
-    private Configuracao configuracao = new Configuracao();
+    private Configuration configuracao = new Configuration();
     private static String MENSAGEM_ERRO = "Erro a executar a anotação XwORM";
 
     @Override
     public boolean process(Set<? extends TypeElement> anotacoes, RoundEnvironment ambiente) {
 
         // Iniciar o XwTemplates
-        configuracao.setCarregadorTemplate(new CarregadorTemplateClasse(this.getClass(), "/res"));
+        configuracao.setTemplateLoader(new ClassTemplateLoader(this.getClass(), "/templates"));
 
         // Iniciar o Registador
         registador = new Registador(processingEnv.getMessager());
@@ -114,12 +117,50 @@ public class Processador extends AbstractProcessor {
                 return true;
             }
         }
-        // TODO
+
+        // Segunda passagem para gerar os templates FabricaBaseDados agora que todas as entidades estão associadas à BD
+        for (ModeloBasedados modeloBasedados : xwormAmbiente.getModelosBasedados()) {
+            try {
+                TemplateFabricaBaseDados templateFabricaBaseDados = new TemplateFabricaBaseDados(modeloBasedados);
+                processarTemplate(processingEnv, configuracao, templateFabricaBaseDados);
+            } catch (Exception excecao) {
+                registador.erro(MENSAGEM_ERRO, excecao);
+                return true;
+            }
+        }
+
+        // Escrever todas as base de dados processadas para um ficheiro indice para suportar compilações incrementais
+        xwormAmbiente.escreverIndice(processingEnv.getFiler());
+
         return false;
     }
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.values()[SourceVersion.values().length - 1];
+    }
+
+    /**
+     * Método para processar um template.
+     *
+     * @param processingEnvironment Ambiente de processamento
+     * @param configuracao Configuração da classe de processamento de template
+     * @param templateClasse Classe de template
+     */
+    void processarTemplate(ProcessingEnvironment processingEnvironment, Configuration configuracao,
+                           TemplateClasse templateClasse) {
+        JavaFileObject ficheiro;
+
+        try {
+            ficheiro = processingEnvironment.getFiler().createSourceFile(templateClasse.getClasseGerada());
+            Writer saida = ficheiro.openWriter();
+            Template template = configuracao.getTemplate(templateClasse.getCaminhoTemplate());
+            registador.informacao("Generando " + ficheiro.getName() + " com " + template.getName());
+            template.process(templateClasse.getModelo(), saida);
+            saida.flush();
+            saida.close();
+        } catch (Exception excecao) {
+            registador.erro("Erro de template", excecao);
+        }
     }
 }

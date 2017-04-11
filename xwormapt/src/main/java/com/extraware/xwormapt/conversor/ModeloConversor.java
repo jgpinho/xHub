@@ -7,8 +7,11 @@ import com.extraware.xwormapi.types.ConversorTipo.TipoLigacao;
 import com.extraware.xwormapi.types.ConversorTipo.TipoSQL;
 import com.extraware.xwormapt.ModeloClasse;
 import com.extraware.xwormapt.Registador;
+import com.extraware.xwormapt.UtilitariosSQL;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ModeloConversor extends ModeloClasse {
@@ -81,5 +84,23 @@ public class ModeloConversor extends ModeloClasse {
         String[]tiposConvertiveis = propriedades.get("tiposConvertiveis").split(SEPARADOR_TIPO);
 
         return new ModeloConversor(classeConversora, tiposConvertiveis, tipoLigacao, tipoSQL);
+    }
+
+    public void escreverIndice(PrintWriter saida) {
+
+        // Não escrever os conversores integrados para evitar duplicados
+        if (integrado) return;
+
+        // Criar a lista de tipos
+        String listaTipos = new String();
+        for (String tipo : this.tiposConvertiveis) listaTipos += SEPARADOR_TIPO + tipo;
+        listaTipos = listaTipos.substring(1);
+
+        Map<String,String> mapa = new LinkedHashMap<String,String>();
+        mapa.put("classeConversora", this.getQualifiedClassName());
+        mapa.put("tipoLigacao", this.tipoLigacao.name());
+        mapa.put("tipoSQL", this.tipoSQL.name());
+        mapa.put("tiposConvertiveis", listaTipos);
+        saida.println(CSVUtilitarios.mapaParaCSV(mapa));
     }
 }

@@ -1,8 +1,6 @@
 package com.extraware.xwormapt;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.*;
 
 import javax.annotation.processing.Filer;
@@ -169,5 +167,39 @@ public class Ambiente {
         } catch (IOException e) {
             // TODO
         }
+    }
+
+    /**
+     * Este método escreve o modelo atual num ficheiro para dar suporte à compilação incremental.
+     *
+     * @param gestorFicheiros Utilizado pelo processador de anotações
+     */
+    void escreverIndice(Filer gestorFicheiros) {
+
+        // Local de saída das fontes
+        StandardLocation local = StandardLocation.SOURCE_OUTPUT;
+        // Ficheiro do índice
+        FileObject ficheiroIndice;
+
+        try {
+            // Criar o ficheiro de índice
+            ficheiroIndice = gestorFicheiros.createResource(local, "com.extraware.xwormapi", FICHEIRO_AMBIENTE);
+            OutputStream ficheiroEscrita = ficheiroIndice.openOutputStream();
+            PrintWriter saida = new PrintWriter(ficheiroEscrita);
+
+            // Escrever os conversores
+            saida.println(INICIO_CONVERSORES);
+            for (ModeloConversor conversor : conversores) conversor.escreverIndice(saida);
+            saida.println(FIM_CONVERSORES);
+
+            // Escrever as bases de dados
+            for (ModeloBasedados modeloBasedados : modelosBasedados.values()) modeloBasedados.escreverIndice(saida);
+
+            saida.close();
+
+        } catch (IOException excecao) {
+            throw new RuntimeException(excecao);
+        }
+
     }
 }

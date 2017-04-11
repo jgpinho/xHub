@@ -5,10 +5,13 @@ import com.extraware.xwormapt.Ambiente;
 import com.extraware.xwormapt.ModeloClasse;
 import com.extraware.xwormapt.Registador;
 import com.extraware.xwormapt.entidade.ModeloEntidade;
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,5 +101,25 @@ public class ModeloBasedados extends ModeloClasse {
         modeloBasedados.gestoresTabela = gestoresBasedados;
 
         return modeloBasedados;
+    }
+
+    /**
+     * Escrever a informação da base de dados e as tabelas associadas para um ficheiro de suporte que
+     * suporta a compilação incremental.
+     *
+     * @param saida Escreve a saida
+     */
+    public void escreverIndice(PrintWriter saida) {
+        saida.println(Ambiente.INICIO_BASEDADOS);
+        Map<String,String> mapaBasedados = new HashMap<String,String>();
+        mapaBasedados.put("basedados", this.getBasedados());
+        mapaBasedados.put("versao", String.valueOf(this.getVersao()));
+        mapaBasedados.put("classeGestora", this.getQualifiedClassName());
+        String infoBasedados = CSVUtilitarios.mapaParaCSV(mapaBasedados);
+        saida.println(infoBasedados);
+
+        // Escreve os GestoresTabela
+        for (String gestorTabela : this.gestoresTabela) saida.println(gestorTabela);
+        saida.println(Ambiente.FIM_BASEDADOS);
     }
 }
